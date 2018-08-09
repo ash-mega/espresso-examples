@@ -20,7 +20,7 @@ public class CustomListActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_custom_list);
 
-        ListView list = (ListView) findViewById(R.id.list);
+        ListView list = findViewById(R.id.list);
         list.setAdapter(new BooksAdapter(this, Database.ALL_BOOKS));
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
