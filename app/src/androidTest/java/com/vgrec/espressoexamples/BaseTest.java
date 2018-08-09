@@ -7,7 +7,6 @@
  */
 package com.vgrec.espressoexamples;
 
-import android.app.Activity;
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.DataInteraction;
@@ -18,27 +17,33 @@ import android.support.test.espresso.ViewInteraction;
 import android.support.test.espresso.action.ViewActions;
 import android.support.test.espresso.assertion.ViewAssertions;
 import android.support.test.espresso.matcher.ViewMatchers;
-import android.support.test.rule.ActivityTestRule;
 import android.view.View;
 import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.TimePicker;
 
 import com.vgrec.espressoexamples.tool.PickerActions;
+import com.vgrec.espressoexamples.tool.RecyclerViewActions;
 
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Rule;
 
+import static android.support.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static org.hamcrest.CoreMatchers.anything;
+import static org.hamcrest.CoreMatchers.not;
 
 class BaseTest {
     
-    org.hamcrest.Matcher<Object> matchesAllConditions(org.hamcrest.Matcher<Object>... matchers) {
-        return org.hamcrest.core.AllOf.allOf(matchers);
+    //********************************** General ****************************************/
+    Context getContext() {
+        return InstrumentationRegistry.getContext();
     }
     
+    void openActionBarOverflowOrOptionsMenu() {
+        Espresso.openActionBarOverflowOrOptionsMenu(getContext());
+    }
+    
+    //********************************** Interaction ****************************************/
     DataInteraction onData(Matcher<?> dataMatcher) {
         return Espresso.onData(dataMatcher);
     }
@@ -50,16 +55,21 @@ class BaseTest {
         return Espresso.onData(anything()).atPosition(position);
     }
     
-    ViewInteraction onView(final Matcher<View> viewMatcher) {
+    ViewInteraction onView(Matcher<View> viewMatcher) {
         return Espresso.onView(viewMatcher);
     }
     
-    Context getContext() {
-        return InstrumentationRegistry.getContext();
+    ViewInteraction onViewId(int id) {
+        return Espresso.onView(withId(id));
     }
     
-    void openActionBarOverflowOrOptionsMenu() {
-        Espresso.openActionBarOverflowOrOptionsMenu(getContext());
+    ViewInteraction onViewText(String text) {
+        return Espresso.onView(withText(text));
+    }
+    
+    //********************************** Matcher ****************************************/
+    org.hamcrest.Matcher<Object> matchesAllConditions(org.hamcrest.Matcher<Object>... matchers) {
+        return org.hamcrest.core.AllOf.allOf(matchers);
     }
     
     Matcher<View> withId(int id) {
@@ -74,10 +84,31 @@ class BaseTest {
         return ViewMatchers.withText(id);
     }
     
-    Matcher<View> withClass(final Class<?> cls) {
+    Matcher<View> withClass(Class<?> cls) {
         return ViewMatchers.withClassName(Matchers.equalTo(cls.getName()));
     }
     
+    Matcher<View> isDisplayed() {
+        return ViewMatchers.isDisplayed();
+    }
+    
+    Matcher<View> isNotDisplayed() {
+        return not(ViewMatchers.isDisplayed());
+    }
+    
+    Matcher<View> withHint(int resourceId) {
+        return ViewMatchers.withHint(resourceId);
+    }
+    
+    Matcher<View> isAssignableFrom(Class<? extends View> cls) {
+        return ViewMatchers.isAssignableFrom(cls);
+    }
+    
+    Matcher<View> withHint(String hint) {
+        return ViewMatchers.withHint(hint);
+    }
+    
+    //********************************** Action ****************************************/
     ViewAction click() {
         return ViewActions.click();
     }
@@ -130,7 +161,12 @@ class BaseTest {
         return PickerActions.setTime(hours,minutes);
     }
     
-    ViewAssertion matches(final Matcher<View> viewMatcher) {
+    ViewAction pressImeActionButton() {
+        return ViewActions.pressImeActionButton();
+    }
+    
+    //********************************** Assertion ****************************************/
+    ViewAssertion matches(Matcher<View> viewMatcher) {
         return ViewAssertions.matches(viewMatcher);
     }
     
@@ -138,8 +174,17 @@ class BaseTest {
         return ViewAssertions.doesNotExist();
     }
     
+    //********************************** Perform ****************************************/
+    void clickRecyclerViewOnPosition(int id,int position) {
+        onViewId(id).perform(RecyclerViewActions.actionOnItemAtPosition(0,click()));
+    }
+    
+    void clickRecyclerViewOnItemWithText(int id,String text) {
+        onViewId(id).perform(RecyclerViewActions.actionOnItem(hasDescendant(withText(text)),click()));
+    }
+    
     void clickViewWithId(int id) {
-        onView(withId(id)).perform(click());
+        onViewId(id).perform(click());
     }
     
     void clickViewWithData(Matcher<Object> dataMatcher) {
@@ -147,7 +192,7 @@ class BaseTest {
     }
     
     void clickViewWithText(String text) {
-        onView(withText(text)).perform(click());
+        onViewText(text).perform(click());
     }
     
     void clickViewOnPosition(int position) {
@@ -162,16 +207,61 @@ class BaseTest {
         onView(withClass(TimePicker.class)).perform(setTime(hours,minutes));
     }
     
+    void typeText(int id,String text) {
+        onViewId(id).perform(typeText(text));
+    }
+    
+    void doSearch(String textToSearch) {
+        onView(isAssignableFrom(EditText.class)).perform(typeText(textToSearch), pressImeActionButton());
+    }
+    
+    //********************************** Check ****************************************/
     void checkViewWithIdByText(int id,String expectedText) {
         onView(withId(id)).check(matches(withText(expectedText)));
+    }
+    
+    void checkViewWithIdByTextId(int id,int expectedTextId) {
+        onView(withId(id)).check(matches(withTextId(expectedTextId)));
+    }
+    
+    void checkViewWithIdByDisplayed(int id) {
+        checkViewWithIdByDisplayed(id,true);
+    }
+    
+    void checkViewWithIdByNotDisplayed(int id) {
+        checkViewWithIdByDisplayed(id,false);
+    }
+    
+    void checkViewWithIdByDisplayed(int id,boolean checkDisplayed) {
+        if (checkDisplayed) {
+            onView(withId(id)).check(matches(isDisplayed()));
+        } else {
+            onView(withId(id)).check(matches(isNotDisplayed()));
+        }
     }
     
     void checkViewWithTextByText(String text,String expectedText) {
         onView(withText(text)).check(matches(withText(expectedText)));
     }
     
+    void checkViewWithTextByText(int textId,String expectedText) {
+        onView(withTextId(textId)).check(matches(withText(expectedText)));
+    }
+    
+    void checkViewWithTextByDisplayed(String text) {
+        onView(withText(text)).check(matches(isDisplayed()));
+    }
+    
+    void checkViewWithTextByDisplayed(int textId) {
+        onView(withTextId(textId)).check(matches(isDisplayed()));
+    }
+    
     void checkView(ViewInteraction view,ViewAssertion condition) {
         view.check(condition);
+    }
+    
+    void checkViewMatches(ViewInteraction view,Matcher<View> condition) {
+        view.check(matches(condition));
     }
     
     void checkView(DataInteraction data,ViewAssertion condition) {
@@ -182,7 +272,7 @@ class BaseTest {
         sleep(1000);
     }
     
-    void slee2s() {
+    void sleep2s() {
         sleep(2000);
     }
     
