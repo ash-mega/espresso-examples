@@ -16,6 +16,7 @@ import android.support.test.espresso.ViewAssertion;
 import android.support.test.espresso.ViewInteraction;
 import android.support.test.espresso.action.ViewActions;
 import android.support.test.espresso.assertion.ViewAssertions;
+import android.support.test.espresso.matcher.BoundedMatcher;
 import android.support.test.espresso.matcher.ViewMatchers;
 import android.view.View;
 import android.widget.DatePicker;
@@ -25,12 +26,17 @@ import android.widget.TimePicker;
 import com.vgrec.espressoexamples.tool.PickerActions;
 import com.vgrec.espressoexamples.tool.RecyclerViewActions;
 
+import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 
 import static android.support.test.espresso.matcher.ViewMatchers.hasDescendant;
+import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.anything;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.instanceOf;
 
 class BaseTest {
     
@@ -67,9 +73,33 @@ class BaseTest {
         return Espresso.onView(withText(text));
     }
     
+    ViewInteraction getSingleSearchBar() {
+        return onView(isAssignableFrom(EditText.class));
+    }
+    
     //********************************** Matcher ****************************************/
     org.hamcrest.Matcher<Object> matchesAllConditions(org.hamcrest.Matcher<Object>... matchers) {
-        return org.hamcrest.core.AllOf.allOf(matchers);
+        return org.hamcrest.Matchers.allOf(matchers);
+    }
+    
+    org.hamcrest.Matcher<Object> isType(Class<?> type) {
+        return is(instanceOf(type));
+    }
+    
+    Matcher<Object> withItemText(String expectedText) {
+        final Matcher<String> itemTextMatcher = equalTo(expectedText);
+        return new BoundedMatcher<Object, String>(String.class) {
+            @Override
+            public boolean matchesSafely(String text) {
+                return itemTextMatcher.matches(text);
+            }
+            
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("with item content: ");
+                itemTextMatcher.describeTo(description);
+            }
+        };
     }
     
     Matcher<View> withId(int id) {
@@ -125,16 +155,16 @@ class BaseTest {
         return ViewActions.clearText();
     }
     
-    ViewAction pressBack() {
-        return ViewActions.pressBack();
+    void pressBack() {
+        Espresso.pressBack();
     }
     
     ViewAction scrollTo() {
         return ViewActions.scrollTo();
     }
     
-    ViewAction closeSoftKeyboard() {
-        return ViewActions.closeSoftKeyboard();
+    void closeSoftKeyboard() {
+        Espresso.closeSoftKeyboard();
     }
     
     ViewAction swipeDown() {
@@ -212,7 +242,15 @@ class BaseTest {
     }
     
     void doSearch(String textToSearch) {
-        onView(isAssignableFrom(EditText.class)).perform(typeText(textToSearch), pressImeActionButton());
+        onView(isAssignableFrom(EditText.class)).perform(typeText(textToSearch),pressImeActionButton());
+    }
+    
+    void clearSearchBar() {
+        getSingleSearchBar().perform(clearText());
+    }
+    
+    void inputSearchBar(String input) {
+        getSingleSearchBar().perform(typeText(input));
     }
     
     //********************************** Check ****************************************/
@@ -254,6 +292,18 @@ class BaseTest {
     
     void checkViewWithTextByDisplayed(int textId) {
         onView(withTextId(textId)).check(matches(isDisplayed()));
+    }
+    
+    void checkItemDisplayed(DataInteraction item) {
+        item.check(matches(isDisplayed()));
+    }
+    
+    void checkItemDisplayed(org.hamcrest.Matcher<Object>... matchers) {
+        checkItemDisplayed(onData(allOf(matchers)));
+    }
+    
+    void checkItemWithTextDisplayed(String expectedText) {
+        checkItemDisplayed(isType(String.class),withItemText(expectedText));
     }
     
     void checkView(ViewInteraction view,ViewAssertion condition) {
