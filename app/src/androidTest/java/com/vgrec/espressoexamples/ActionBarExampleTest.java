@@ -19,6 +19,7 @@ public class ActionBarExampleTest extends BaseTest {
     @Rule
     public ActivityTestRule<ActionBarExampleActivity> rule = new ActivityTestRule<>(ActionBarExampleActivity.class);
     
+    
     @Test
     public void testClickOnMenuItem() {
         // Click on an item from ActionBar

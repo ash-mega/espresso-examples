@@ -14,9 +14,9 @@ import com.vgrec.espressoexamples.activities.CustomListActivity;
 import org.junit.Rule;
 import org.junit.Test;
 
-import static com.vgrec.espressoexamples.CustomMatchers.withBookAuthor;
-import static com.vgrec.espressoexamples.CustomMatchers.withBookId;
-import static com.vgrec.espressoexamples.CustomMatchers.withBookTitle;
+import static com.vgrec.espressoexamples.tool.CustomMatchers.withBookAuthor;
+import static com.vgrec.espressoexamples.tool.CustomMatchers.withBookId;
+import static com.vgrec.espressoexamples.tool.CustomMatchers.withBookTitle;
 
 public class CustomListTest extends BaseTest {
     

@@ -1,4 +1,4 @@
-package com.vgrec.espressoexamples;
+package com.vgrec.espressoexamples.tool;
 
 import android.support.test.espresso.matcher.BoundedMatcher;
 import android.view.View;

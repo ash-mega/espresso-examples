@@ -7,5 +7,38 @@
  */
 package com.vgrec.espressoexamples;
 
+import android.support.test.rule.ActivityTestRule;
+
+import com.vgrec.espressoexamples.activities.DateTimePickerActivity;
+
+import org.junit.Rule;
+import org.junit.Test;
+
 public class DateTimePickerTest extends BaseTest {
+    
+    @Rule
+    public ActivityTestRule<DateTimePickerActivity> rule = new ActivityTestRule<>(DateTimePickerActivity.class);
+    
+    @Test
+    public void testSetDate() {
+        int year = 2020;
+        int month = 11;
+        int day = 15;
+        
+        clickViewWithId(R.id.date_picker_button);
+        datePickerSetDate(year,month + 1,day);
+        clickViewWithId(android.R.id.button1);
+        checkViewWithIdByText(R.id.status,year + "/" + month + "/" + day);
+    }
+    
+    @Test
+    public void testSetTime() {
+        int hour = 10;
+        int minutes = 59;
+        
+        clickViewWithId(R.id.time_picker_button);
+        timePickerSetTime(hour,minutes);
+        clickViewWithId(android.R.id.button1);
+        checkViewWithIdByText(R.id.status,hour + ":" + minutes);
+    }
 }

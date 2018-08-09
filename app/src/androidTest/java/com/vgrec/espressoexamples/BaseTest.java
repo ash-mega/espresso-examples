@@ -7,6 +7,7 @@
  */
 package com.vgrec.espressoexamples;
 
+import android.app.Activity;
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.DataInteraction;
@@ -17,10 +18,18 @@ import android.support.test.espresso.ViewInteraction;
 import android.support.test.espresso.action.ViewActions;
 import android.support.test.espresso.assertion.ViewAssertions;
 import android.support.test.espresso.matcher.ViewMatchers;
+import android.support.test.rule.ActivityTestRule;
 import android.view.View;
-import android.view.ViewManager;
+import android.widget.DatePicker;
+import android.widget.TimePicker;
+
+import com.vgrec.espressoexamples.tool.PickerActions;
 
 import org.hamcrest.Matcher;
+import org.hamcrest.Matchers;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Rule;
 
 import static org.hamcrest.CoreMatchers.anything;
 
@@ -63,6 +72,10 @@ class BaseTest {
     
     Matcher<View> withTextId(int id) {
         return ViewMatchers.withText(id);
+    }
+    
+    Matcher<View> withClass(final Class<?> cls) {
+        return ViewMatchers.withClassName(Matchers.equalTo(cls.getName()));
     }
     
     ViewAction click() {
@@ -109,6 +122,14 @@ class BaseTest {
         return ViewActions.swipeUp();
     }
     
+    ViewAction setDate(int year,int monthOfYear,int dayOfMonth) {
+        return PickerActions.setDate(year,monthOfYear,dayOfMonth);
+    }
+    
+    ViewAction setTime(int hours,int minutes) {
+        return PickerActions.setTime(hours,minutes);
+    }
+    
     ViewAssertion matches(final Matcher<View> viewMatcher) {
         return ViewAssertions.matches(viewMatcher);
     }
@@ -131,6 +152,14 @@ class BaseTest {
     
     void clickViewOnPosition(int position) {
         onPosition(position).perform(click());
+    }
+    
+    void datePickerSetDate(int year,int monthOfYear,int dayOfMonth) {
+        onView(withClass(DatePicker.class)).perform(setDate(year,monthOfYear,dayOfMonth));
+    }
+    
+    void timePickerSetTime(int hours,int minutes) {
+        onView(withClass(TimePicker.class)).perform(setTime(hours,minutes));
     }
     
     void checkViewWithIdByText(int id,String expectedText) {
