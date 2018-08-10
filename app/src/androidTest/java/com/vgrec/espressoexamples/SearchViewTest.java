@@ -82,9 +82,9 @@ public class SearchViewTest extends BaseTest {
         
         // Enter the first letter of the previously searched word
         inputSearchBar("He");
-        
         // Click on the "Java" item from the suggestions list
-        //TODO
+        //TODO If don't close it then can't perform click.
+        closeSoftKeyboard();
         onView(withText(HELSINKI))
                 .inRoot(withDecorView(not(Matchers.is(rule.getActivity().getWindow().getDecorView()))))
                 .perform(click());

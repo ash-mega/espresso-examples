@@ -16,7 +16,7 @@ public class Database {
             new Book(1, "Clean Code", "Robert C. Martin"),
             new Book(2, "The Clean Coder", "Robert C. Martin"),
             new Book(3, "Code Complete 2", "Steve McConnell"),
-            new Book(4, "Effective Java ", "Joshua Bloch"),
+            new Book(4, "Effective Java", "Joshua Bloch"),
             new Book(5, "Java Concurrency in Practice", "Brian Goetz")
     ));
 
@@ -24,7 +24,7 @@ public class Database {
             new Book(1, "Clean Code", "Robert C. Martin"),
             new Book(2, "The Clean Coder", "Robert C. Martin"),
             new Book(3, "Code Complete 2", "Steve McConnell"),
-            new Book(4, "Effective Java ", "Joshua Bloch"),
+            new Book(4, "Effective Java", "Joshua Bloch"),
             new Book(9, "Refactoring: Improving the Design of Existing Code", "Martin Fowler"),
             new Book(5, "Java Concurrency in Practice", "Brian Goetz"),
             new Book(6, "Essential Algorithms", "Rod Stephens"),

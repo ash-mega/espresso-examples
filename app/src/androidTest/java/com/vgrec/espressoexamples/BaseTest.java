@@ -19,6 +19,8 @@ import android.support.test.espresso.assertion.ViewAssertions;
 import android.support.test.espresso.matcher.BoundedMatcher;
 import android.support.test.espresso.matcher.ViewMatchers;
 import android.view.View;
+import android.widget.Adapter;
+import android.widget.AdapterView;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TimePicker;
@@ -29,6 +31,7 @@ import com.vgrec.espressoexamples.tool.RecyclerViewActions;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
+import org.hamcrest.TypeSafeMatcher;
 
 import static android.support.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static org.hamcrest.CoreMatchers.allOf;
@@ -65,6 +68,10 @@ class BaseTest {
         return Espresso.onView(viewMatcher);
     }
     
+    ViewInteraction onView(Matcher<View>... viewMatchers) {
+        return Espresso.onView(allOf(viewMatchers));
+    }
+    
     ViewInteraction onViewId(int id) {
         return Espresso.onView(withId(id));
     }
@@ -79,6 +86,10 @@ class BaseTest {
     
     //********************************** Matcher ****************************************/
     org.hamcrest.Matcher<Object> matchesAllConditions(org.hamcrest.Matcher<Object>... matchers) {
+        return org.hamcrest.Matchers.allOf(matchers);
+    }
+    
+    org.hamcrest.Matcher<View> matchesAllConditionsView(org.hamcrest.Matcher<View>... matchers) {
         return org.hamcrest.Matchers.allOf(matchers);
     }
     
@@ -98,6 +109,34 @@ class BaseTest {
             public void describeTo(Description description) {
                 description.appendText("with item content: ");
                 itemTextMatcher.describeTo(description);
+            }
+        };
+    }
+    
+    /**
+     * Finds the AdapterView and let another Matcher interrogate the data within it.
+     */
+    Matcher<View> withAdaptedData(final Matcher<Object> dataMatcher) {
+        return new TypeSafeMatcher<View>() {
+            
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("with class name: ");
+                dataMatcher.describeTo(description);
+            }
+            
+            @Override
+            public boolean matchesSafely(View view) {
+                if (!(view instanceof AdapterView)) {
+                    return false;
+                }
+                Adapter adapter = ((AdapterView)view).getAdapter();
+                for (int i = 0;i < adapter.getCount();i++) {
+                    if (dataMatcher.matches(adapter.getItem(i))) {
+                        return true;
+                    }
+                }
+                return false;
             }
         };
     }
@@ -206,7 +245,7 @@ class BaseTest {
     
     //********************************** Perform ****************************************/
     void clickRecyclerViewOnPosition(int id,int position) {
-        onViewId(id).perform(RecyclerViewActions.actionOnItemAtPosition(0,click()));
+        onViewId(id).perform(RecyclerViewActions.actionOnItemAtPosition(position,click()));
     }
     
     void clickRecyclerViewOnItemWithText(int id,String text) {
@@ -227,6 +266,10 @@ class BaseTest {
     
     void clickViewOnPosition(int position) {
         onPosition(position).perform(click());
+    }
+    
+    void clickViewOnItemWithText(String text) {
+        onData(allOf(is(instanceOf(String.class)), is(text))).perform(click());
     }
     
     void datePickerSetDate(int year,int monthOfYear,int dayOfMonth) {
@@ -255,7 +298,7 @@ class BaseTest {
     
     //********************************** Check ****************************************/
     void checkViewWithIdByText(int id,String expectedText) {
-        onView(withId(id)).check(matches(withText(expectedText)));
+        checkViewWithIdByText(id,expectedText,true);
     }
     
     void checkViewWithIdByTextId(int id,int expectedTextId) {
@@ -294,6 +337,14 @@ class BaseTest {
         onView(withTextId(textId)).check(matches(isDisplayed()));
     }
     
+    void checkViewWithIdByText(int id,String toCheck,boolean isMatch) {
+        if (isMatch) {
+            onView(withId(id)).check(matches(withText(toCheck)));
+        } else {
+            onView(withId(id)).check(matches(Matchers.not(withText(toCheck))));
+        }
+    }
+    
     void checkItemDisplayed(DataInteraction item) {
         item.check(matches(isDisplayed()));
     }
@@ -318,6 +369,15 @@ class BaseTest {
         data.check(condition);
     }
     
+    void checkItemWithTextNotInAdapterView(int adapterViewId,String textToCheck) {
+        onView(withId(adapterViewId)).check(matches(Matchers.not(withAdaptedData(withItemText(textToCheck)))));
+    }
+    
+    void checkItemWithTextInAdapterView(int adapterViewId,String textToCheck) {
+        onView(withId(adapterViewId)).check(matches(withAdaptedData(withItemText(textToCheck))));
+    }
+    
+    //********************************** General ****************************************/
     void sleep1s() {
         sleep(1000);
     }

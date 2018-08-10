@@ -16,8 +16,8 @@ import org.junit.Test;
 
 public class RecyclerViewTest extends BaseTest {
     
-    private static final String BOOK_TITLE = "Clean Code";
-    private static final String BOOK_AUTHOR = "Robert C. Martin";
+    private static final String BOOK_TITLE = "Effective Java";
+    private static final String BOOK_AUTHOR = "Joshua Bloch";
     
     @Rule
     public ActivityTestRule<RecyclerViewActivity> rule = new ActivityTestRule<>(RecyclerViewActivity.class);
@@ -25,7 +25,7 @@ public class RecyclerViewTest extends BaseTest {
     @Test
     public void testClickAtPosition() {
         // Perform a click on first element in the RecyclerView
-        clickRecyclerViewOnPosition(R.id.recyclerView,0);
+        clickRecyclerViewOnPosition(R.id.recyclerView,3);
         checkViewWithIdByText(R.id.book_title,BOOK_TITLE);
         checkViewWithIdByText(R.id.book_author,BOOK_AUTHOR);
     }
