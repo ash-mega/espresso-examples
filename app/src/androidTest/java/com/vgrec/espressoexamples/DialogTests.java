@@ -10,11 +10,12 @@ package com.vgrec.espressoexamples;
 import android.support.test.rule.ActivityTestRule;
 
 import com.vgrec.espressoexamples.activities.DialogExampleActivity;
+import com.vgrec.espressoexamples.core.TestHelper;
 
 import org.junit.Rule;
 import org.junit.Test;
 
-public class DialogTests extends BaseTest {
+public class DialogTests extends TestHelper {
     
     @Rule
     public ActivityTestRule<DialogExampleActivity> rule = new ActivityTestRule<>(DialogExampleActivity.class);
@@ -24,7 +25,7 @@ public class DialogTests extends BaseTest {
         // Click on the button that shows the dialog
         clickViewWithId(R.id.confirm_dialog_button);
         // Check the dialog title text is displayed
-        checkViewWithTextByDisplayed(R.string.dialog_title);
+        checkViewWithTextIdMatchesDisplayed(R.string.dialog_title);
     }
     
     @Test
@@ -33,7 +34,7 @@ public class DialogTests extends BaseTest {
         
         // android.R.id.button1 = positive button
         clickViewWithId(android.R.id.button1);
-        checkViewWithIdByTextId(R.id.status_text,R.string.ok);
+        checkViewWithIdMatchesTextId(R.id.status_text,R.string.ok);
     }
     
     @Test
@@ -42,6 +43,6 @@ public class DialogTests extends BaseTest {
         
         // android.R.id.button2 = negative button
         clickViewWithId(android.R.id.button2);
-        checkViewWithIdByTextId(R.id.status_text,R.string.cancel);
+        checkViewWithIdMatchesTextId(R.id.status_text,R.string.cancel);
     }
 }

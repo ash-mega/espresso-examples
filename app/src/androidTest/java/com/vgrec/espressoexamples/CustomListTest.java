@@ -10,6 +10,7 @@ package com.vgrec.espressoexamples;
 import android.support.test.rule.ActivityTestRule;
 
 import com.vgrec.espressoexamples.activities.CustomListActivity;
+import com.vgrec.espressoexamples.core.TestHelper;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -18,7 +19,7 @@ import static com.vgrec.espressoexamples.tool.CustomMatchers.withBookAuthor;
 import static com.vgrec.espressoexamples.tool.CustomMatchers.withBookId;
 import static com.vgrec.espressoexamples.tool.CustomMatchers.withBookTitle;
 
-public class CustomListTest extends BaseTest {
+public class CustomListTest extends TestHelper {
     
     private static final String BOOK_TITLE = "Java Concurrency in Practice";
     
@@ -32,9 +33,9 @@ public class CustomListTest extends BaseTest {
         // Click on the Book with ID 5
         clickViewWithData(withBookId(5));
         // Check the correct book title is displayed
-        checkViewWithIdByText(R.id.book_title,BOOK_TITLE);
+        checkViewWithIdMatchesText(R.id.book_title,BOOK_TITLE);
         // Check the correct author is displayed
-        checkViewWithIdByText(R.id.book_author,BOOK_AUTHOR);
+        checkViewWithIdMatchesText(R.id.book_author,BOOK_AUTHOR);
     }
     
     @Test
@@ -42,17 +43,17 @@ public class CustomListTest extends BaseTest {
         // Match a book with a specific title and author name
         clickViewWithData(matchesAllConditions(withBookId(5),withBookTitle(BOOK_TITLE),withBookAuthor(BOOK_AUTHOR)));
         // Check the correct book title is displayed
-        checkViewWithIdByText(R.id.book_title,BOOK_TITLE);
+        checkViewWithIdMatchesText(R.id.book_title,BOOK_TITLE);
         // Check the correct author is displayed
-        checkViewWithIdByText(R.id.book_author,BOOK_AUTHOR);
+        checkViewWithIdMatchesText(R.id.book_author,BOOK_AUTHOR);
     }
     
     @Test
     public void testClickOnBookByPosition() {
         clickViewOnPosition(5);
         // Check the correct book title is displayed
-        checkViewWithIdByText(R.id.book_title,BOOK_TITLE);
+        checkViewWithIdMatchesText(R.id.book_title,BOOK_TITLE);
         // Check the correct author is displayed
-        checkViewWithIdByText(R.id.book_author,BOOK_AUTHOR);
+        checkViewWithIdMatchesText(R.id.book_author,BOOK_AUTHOR);
     }
 }

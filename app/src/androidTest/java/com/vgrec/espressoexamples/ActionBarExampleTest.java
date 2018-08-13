@@ -10,11 +10,12 @@ package com.vgrec.espressoexamples;
 import android.support.test.rule.ActivityTestRule;
 
 import com.vgrec.espressoexamples.activities.ActionBarExampleActivity;
+import com.vgrec.espressoexamples.core.TestHelper;
 
 import org.junit.Rule;
 import org.junit.Test;
 
-public class ActionBarExampleTest extends BaseTest {
+public class ActionBarExampleTest extends TestHelper {
     
     @Rule
     public ActivityTestRule<ActionBarExampleActivity> rule = new ActivityTestRule<>(ActionBarExampleActivity.class);
@@ -25,7 +26,7 @@ public class ActionBarExampleTest extends BaseTest {
         // Click on an item from ActionBar
         clickViewWithId(R.id.action_settings);
         // Verify the correct item was clicked by checking the content of the status TextView
-        checkViewWithIdByText(R.id.status,"Settings");
+        checkViewWithIdMatchesText(R.id.status,"Settings");
     }
     
     @Test
@@ -35,7 +36,7 @@ public class ActionBarExampleTest extends BaseTest {
         // Find the menu item with text "About" and click on it
         clickViewWithText("About");
         // Verify the correct item was clicked by checking the content of the status TextView
-        checkViewWithIdByText(R.id.status,"About");
+        checkViewWithIdMatchesText(R.id.status,"About");
     }
     
     @Test
@@ -45,6 +46,6 @@ public class ActionBarExampleTest extends BaseTest {
         // Click on a context item
         clickViewWithId(R.id.action_one);
         // Verify the correct item was clicked by checking the content of the status TextView
-        checkViewWithIdByText(R.id.status,"ActionMode1");
+        checkViewWithIdMatchesText(R.id.status,"ActionMode1");
     }
 }

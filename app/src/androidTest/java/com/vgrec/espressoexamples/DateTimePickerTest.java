@@ -10,11 +10,12 @@ package com.vgrec.espressoexamples;
 import android.support.test.rule.ActivityTestRule;
 
 import com.vgrec.espressoexamples.activities.DateTimePickerActivity;
+import com.vgrec.espressoexamples.core.TestHelper;
 
 import org.junit.Rule;
 import org.junit.Test;
 
-public class DateTimePickerTest extends BaseTest {
+public class DateTimePickerTest extends TestHelper {
     
     @Rule
     public ActivityTestRule<DateTimePickerActivity> rule = new ActivityTestRule<>(DateTimePickerActivity.class);
@@ -28,7 +29,7 @@ public class DateTimePickerTest extends BaseTest {
         clickViewWithId(R.id.date_picker_button);
         datePickerSetDate(year,month + 1,day);
         clickViewWithId(android.R.id.button1);
-        checkViewWithIdByText(R.id.status,year + "/" + month + "/" + day);
+        checkViewWithIdMatchesText(R.id.status,year + "/" + month + "/" + day);
     }
     
     @Test
@@ -39,6 +40,6 @@ public class DateTimePickerTest extends BaseTest {
         clickViewWithId(R.id.time_picker_button);
         timePickerSetTime(hour,minutes);
         clickViewWithId(android.R.id.button1);
-        checkViewWithIdByText(R.id.status,hour + ":" + minutes);
+        checkViewWithIdMatchesText(R.id.status,hour + ":" + minutes);
     }
 }
