@@ -10,40 +10,51 @@ package com.vgrec.espressoexamples.core;
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.DataInteraction;
+import android.support.test.espresso.Espresso;
 import android.support.test.espresso.ViewAssertion;
 import android.support.test.espresso.ViewInteraction;
+import android.support.test.rule.ActivityTestRule;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.DatePicker;
 import android.widget.TimePicker;
 
 import org.hamcrest.Matcher;
 
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
-import static android.support.test.espresso.matcher.ViewMatchers.isChecked;
-import static android.support.test.espresso.matcher.ViewMatchers.isNotChecked;
-import static android.support.test.espresso.matcher.ViewMatchers.withHint;
 import static com.vgrec.espressoexamples.core.Actions.clearText;
 import static com.vgrec.espressoexamples.core.Actions.click;
 import static com.vgrec.espressoexamples.core.Actions.pressImeActionButton;
 import static com.vgrec.espressoexamples.core.Actions.setDate;
 import static com.vgrec.espressoexamples.core.Actions.setTime;
+import static com.vgrec.espressoexamples.core.Actions.swipeLeft;
+import static com.vgrec.espressoexamples.core.Actions.swipeRight;
+import static com.vgrec.espressoexamples.core.Matchers.DataMatchers.matchesItemText;
+import static com.vgrec.espressoexamples.core.Matchers.DataMatchers.matchesType;
+import static com.vgrec.espressoexamples.core.Matchers.ViewMatchers.matchesAssignableFrom;
+import static com.vgrec.espressoexamples.core.Matchers.ViewMatchers.matchesChecked;
 import static com.vgrec.espressoexamples.core.Matchers.ViewMatchers.matchesDisplayed;
+import static com.vgrec.espressoexamples.core.Matchers.ViewMatchers.matchesHintId;
+import static com.vgrec.espressoexamples.core.Matchers.ViewMatchers.matchesId;
+import static com.vgrec.espressoexamples.core.Matchers.ViewMatchers.matchesItem;
+import static com.vgrec.espressoexamples.core.Matchers.ViewMatchers.matchesNotChecked;
 import static com.vgrec.espressoexamples.core.Matchers.ViewMatchers.matchesNotDisplayed;
 import static com.vgrec.espressoexamples.core.Matchers.ViewMatchers.matchesText;
 import static com.vgrec.espressoexamples.core.Matchers.ViewMatchers.matchesTextId;
 import static com.vgrec.espressoexamples.core.Matchers.ViewMatchers.notMatches;
+import static com.vgrec.espressoexamples.core.Matchers.ViewMatchers.withDecorView;
 import static com.vgrec.espressoexamples.core.TargetElements.DataElements.onData;
 import static com.vgrec.espressoexamples.core.TargetElements.DataElements.onPosition;
-import static com.vgrec.espressoexamples.core.TargetElements.DataElements.onText;
 import static com.vgrec.espressoexamples.core.TargetElements.ViewElements.onSearchBar;
+import static com.vgrec.espressoexamples.core.TargetElements.ViewElements.onView;
 import static com.vgrec.espressoexamples.core.TargetElements.ViewElements.onViewId;
 import static com.vgrec.espressoexamples.core.TargetElements.ViewElements.onViewText;
 import static com.vgrec.espressoexamples.core.TargetElements.ViewElements.onViewTextId;
 import static com.vgrec.espressoexamples.core.TargetElements.ViewElements.onViewType;
+import static com.vgrec.espressoexamples.tool.CustomMatchers.withAdaptedData;
 
 public class TestHelper {
     
-    //********************************** General ****************************************/
     protected Context getContext() {
         return InstrumentationRegistry.getContext();
     }
@@ -68,9 +79,22 @@ public class TestHelper {
         }
     }
     
-    //********************************** Perform ****************************************/
+    protected void clickItemInDisplayedAdapterView(Matcher<Object>... matchers) {
+        onData(matchesAllConditions(matchers)).
+                inAdapterView(Matchers.ViewMatchers.matchesAllConditions(matchesAssignableFrom(AdapterView.class),matchesDisplayed()))
+                .perform(click());
+    }
+    
     protected void openActionBarOverflowOrOptionsMenu() {
-        Actions.openActionBarOverflowOrOptionsMenu(getContext());
+        Espresso.openActionBarOverflowOrOptionsMenu(getContext());
+    }
+    
+    protected void closeSoftKeyboard() {
+        Espresso.closeSoftKeyboard();
+    }
+    
+    protected void pressBack() {
+        Espresso.pressBack();
     }
     
     protected void clickViewWithId(int id) {
@@ -79,7 +103,7 @@ public class TestHelper {
     
     protected void clickViewWithIdAndDismissKeyboard(int id) {
         clickViewWithId(id);
-        Actions.closeSoftKeyboard();
+        closeSoftKeyboard();
     }
     
     protected void clickRecyclerViewOnPosition(int id,int position) {
@@ -87,7 +111,7 @@ public class TestHelper {
     }
     
     protected void clickRecyclerViewOnItemWithText(int id,String text) {
-        onViewId(id).perform(Actions.clickRecyclerViewOnItemWithText(text),click());
+        onViewId(id).perform(Actions.clickRecyclerViewOnItemWithText(text));
     }
     
     protected void clickViewWithData(Matcher<Object> dataMatcher) {
@@ -107,7 +131,7 @@ public class TestHelper {
     }
     
     protected void clickViewOnItemWithText(String text) {
-        onText(text).perform(click());
+        onData(matchesItemText(text)).perform(click());
     }
     
     protected void datePickerSetDate(int year,int monthOfYear,int dayOfMonth) {
@@ -134,11 +158,10 @@ public class TestHelper {
         onSearchBar().perform(clearText());
     }
     
-    void inputSearchBar(String input) {
+    protected void inputSearchBar(String input) {
         onSearchBar().perform(Actions.typeText(input));
     }
     
-    //********************************** Check ****************************************/
     private void checkViewWithIdByText(int id,String toCheck,boolean isMatch) {
         if (isMatch) {
             onViewId(id).check(matches(matchesText(toCheck)));
@@ -197,9 +220,9 @@ public class TestHelper {
     
     private void isCheckBoxChecked(int id,boolean checked) {
         if (checked) {
-            onViewId(id).check(matches(isChecked()));
+            onViewId(id).check(matches(matchesChecked()));
         } else {
-            onViewId(id).check(matches(isNotChecked()));
+            onViewId(id).check(matches(matchesNotChecked()));
         }
     }
     
@@ -219,7 +242,7 @@ public class TestHelper {
         checkViewWithTextByDisplayed(text,false);
     }
     
-    protected void checkItemDisplayed(DataInteraction item) {
+    private void checkItemDisplayed(DataInteraction item) {
         item.check(matches(matchesDisplayed()));
     }
     
@@ -235,7 +258,14 @@ public class TestHelper {
         data.check(condition);
     }
     
-    /************************** Added *************************************/
+    protected void checkItemWithTextNotInSpinner(int spinnerId,String textToCheck) {
+        onViewId(spinnerId).check(matches(notMatches(matchesItem(matchesItemText(textToCheck)))));
+    }
+    
+    protected void checkItemWithTextInSpinner(int spinnerId,String textToCheck) {
+        onViewId(spinnerId).check(matches(matchesItem(matchesItemText(textToCheck))));
+    }
+    
     protected Matcher<Object> matchesAllConditions(Matcher<Object>... matchers) {
         return Matchers.DataMatchers.matchesAllConditions(matchers);
     }
@@ -257,6 +287,42 @@ public class TestHelper {
     }
     
     protected void checkViewWithIdMatchesHintId(int id,int hintId) {
-        onViewId(id).check(matches(withHint(hintId)));
+        onViewId(id).check(matches(matchesHintId(hintId)));
+    }
+    
+    protected void checkItemWithTextDisplayed(String expectedText) {
+        checkItemDisplayed(onData(matchesAllConditions(matchesType(String.class),matchesItemText(expectedText))));
+    }
+    
+    private ViewInteraction onViewMatchesAllConditions(Matcher<View>... viewMatchers) {
+        return onView(viewMatchers);
+    }
+    
+    protected ViewInteraction onViewIdDisplayed(int id) {
+        return onViewMatchesAllConditions(matchesId(id),matchesDisplayed());
+    }
+    
+    private ViewInteraction getSearchSuggestion(String suggestion,ActivityTestRule rule) {
+        return onViewText(suggestion).inRoot(withDecorView(notMatches(Matchers.ViewMatchers.is(rule.getActivity().getWindow().getDecorView()))));
+    }
+    
+    protected Matcher<View> onText(String text) {
+        return matchesText(text);
+    }
+    
+    protected void checkSearchSuggestion(String suggestion,ActivityTestRule rule) {
+        getSearchSuggestion(suggestion,rule).check(matches(matchesDisplayed()));
+    }
+    
+    protected void clickSearchSuggestion(String suggestion,ActivityTestRule rule) {
+        getSearchSuggestion(suggestion,rule).perform(click());
+    }
+    
+    protected void viewPagerswipeLeft(int id) {
+        onViewId(id).perform(swipeLeft());
+    }
+    
+    protected void viewPagerswipeRight(int id) {
+        onViewId(id).perform(swipeRight());
     }
 }

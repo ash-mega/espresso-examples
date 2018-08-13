@@ -7,7 +7,9 @@
  */
 package com.vgrec.espressoexamples.core;
 
+import android.support.test.espresso.Root;
 import android.support.test.espresso.matcher.BoundedMatcher;
+import android.support.test.espresso.matcher.RootMatchers;
 import android.view.View;
 import android.widget.Adapter;
 import android.widget.AdapterView;
@@ -33,6 +35,10 @@ import static org.hamcrest.Matchers.not;
 class Matchers {
     
     static class DataMatchers {
+
+        static org.hamcrest.Matcher<Object> is(Object v) {
+            return org.hamcrest.Matchers.is(v);
+        }
         
         static Matcher<Object> matchesAllConditions(Matcher<Object>... matchers) {
             return allOf(matchers);
@@ -43,7 +49,7 @@ class Matchers {
         }
         
         static Matcher<Object> matchesType(Class<?> type) {
-            return is(instanceOf(type));
+            return org.hamcrest.core.Is.is(instanceOf(type));
         }
         
         static Matcher<Object> matchesItemText(String expectedText) {
@@ -66,6 +72,14 @@ class Matchers {
     
     static class ViewMatchers {
     
+        static Matcher<Root> withDecorView(Matcher<View> decorViewMatcher) {
+            return RootMatchers.withDecorView(decorViewMatcher);
+        }
+    
+        static org.hamcrest.Matcher<View> is(View v) {
+            return org.hamcrest.Matchers.is(v);
+        }
+        
         static Matcher<View> notMatches(Matcher<View> matcher) {
             return not(matcher);
         }
@@ -74,11 +88,11 @@ class Matchers {
             return allOf(matchers);
         }
         
-        static Matcher<View> matchesId(int viewId) {
+        public static Matcher<View> matchesId(int viewId) {
             return withId(viewId);
         }
         
-        static Matcher<View> matchesText(String text) {
+        public static Matcher<View> matchesText(String text) {
             return withText(text);
         }
         
@@ -90,7 +104,7 @@ class Matchers {
             return withClassName(org.hamcrest.Matchers.equalTo(cls.getName()));
         }
         
-        static Matcher<View> matchesDisplayed() {
+        public static Matcher<View> matchesDisplayed() {
             return isDisplayed();
         }
         
@@ -117,10 +131,11 @@ class Matchers {
         static Matcher<View> matchesAssignableFrom(Class<? extends View> cls) {
             return isAssignableFrom(cls);
         }
+    
+        static Matcher<View> hasDescendant(Matcher<View> descendantMatcher) {
+            return android.support.test.espresso.matcher.ViewMatchers.hasDescendant(descendantMatcher);
+        }
         
-        /**
-         * Finds the AdapterView and let another Matcher interrogate the data within it.
-         */
         static Matcher<View> matchesItem(final Matcher<Object> dataMatcher) {
             return new TypeSafeMatcher<View>() {
                 

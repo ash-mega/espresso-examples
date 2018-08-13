@@ -15,22 +15,10 @@ import android.support.test.espresso.action.ViewActions;
 import com.vgrec.espressoexamples.tool.PickerActions;
 import com.vgrec.espressoexamples.tool.RecyclerViewActions;
 
-import static android.support.test.espresso.matcher.ViewMatchers.hasDescendant;
-import static android.support.test.espresso.matcher.ViewMatchers.withText;
+import static com.vgrec.espressoexamples.core.Matchers.ViewMatchers.hasDescendant;
+import static com.vgrec.espressoexamples.core.Matchers.ViewMatchers.matchesText;
 
-public class Actions {
-    
-    static void openActionBarOverflowOrOptionsMenu(Context context) {
-        Espresso.openActionBarOverflowOrOptionsMenu(context);
-    }
-    
-    static void closeSoftKeyboard() {
-        Espresso.closeSoftKeyboard();
-    }
-    
-    static void pressBack() {
-        Espresso.pressBack();
-    }
+class Actions {
     
     static ViewAction click() {
         return ViewActions.click();
@@ -45,11 +33,11 @@ public class Actions {
     }
     
     static ViewAction clickRecyclerViewOnItemWithText(String text) {
-        return RecyclerViewActions.actionOnItem(hasDescendant(withText(text)),click());
+        return RecyclerViewActions.actionOnItem(hasDescendant(matchesText(text)),click());
     }
     
     static ViewAction longClickRecyclerViewOnItemWithText(String text) {
-        return RecyclerViewActions.actionOnItem(hasDescendant(withText(text)),longClick());
+        return RecyclerViewActions.actionOnItem(hasDescendant(matchesText(text)),longClick());
     }
     
     static ViewAction longClick() {

@@ -12,7 +12,6 @@ import org.junit.runners.Suite;
         EnterNameTest.class,
         RecyclerViewTest.class,
         SearchViewTest.class,
-        SpinnerSelectionTest.class,
-        ViewPagerTest.class})
+        SpinnerSelectionTest.class})
 public class TestSuite {
 }

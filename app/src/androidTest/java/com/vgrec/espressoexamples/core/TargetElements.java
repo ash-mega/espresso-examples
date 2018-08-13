@@ -21,9 +21,9 @@ import static com.vgrec.espressoexamples.core.Matchers.ViewMatchers.matchesId;
 import static com.vgrec.espressoexamples.core.Matchers.ViewMatchers.matchesTextId;
 import static com.vgrec.espressoexamples.core.Matchers.ViewMatchers.matchesType;
 
-public class TargetElements {
+class TargetElements {
     
-    public static class DataElements {
+    static class DataElements {
         
         static DataInteraction onData(Matcher<?> dataMatcher) {
             return Espresso.onData(dataMatcher);
@@ -41,7 +41,7 @@ public class TargetElements {
         }
     }
     
-    public static class ViewElements {
+    static class ViewElements {
         
         static ViewInteraction onView(Matcher<View> viewMatcher) {
             return Espresso.onView(viewMatcher);

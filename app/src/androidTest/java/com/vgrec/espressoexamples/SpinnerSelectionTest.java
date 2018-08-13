@@ -10,6 +10,7 @@ package com.vgrec.espressoexamples;
 import android.support.test.rule.ActivityTestRule;
 
 import com.vgrec.espressoexamples.activities.SpinnerSelectionActivity;
+import com.vgrec.espressoexamples.core.TestHelper;
 import com.vgrec.espressoexamples.tool.RecyclerViewActions;
 
 import org.hamcrest.Matchers;
@@ -22,7 +23,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.not;
 
-public class SpinnerSelectionTest extends BaseTest {
+public class SpinnerSelectionTest extends TestHelper {
     
     public static final String INVALID_COUNTRY_NAME = "NoSuchCountry";
     public static final String VALID_COUNTRY_NAME = "Moldova";
@@ -33,7 +34,7 @@ public class SpinnerSelectionTest extends BaseTest {
     
     @Test
     public void testCountryNotInList() {
-        checkItemWithTextNotInAdapterView(R.id.countries_spinner,INVALID_COUNTRY_NAME);
+        checkItemWithTextNotInSpinner(R.id.countries_spinner,INVALID_COUNTRY_NAME);
     }
     
     @Test
@@ -46,7 +47,7 @@ public class SpinnerSelectionTest extends BaseTest {
         clickViewOnPosition(0);
         
         // Check that the country label is not updated.
-        checkViewWithIdByText(R.id.country_label,FIRST_ITEM_TEXT,false);
+        checkViewWithIdNotMatchesText(R.id.country_label,FIRST_ITEM_TEXT);
     }
     
     @Test
@@ -58,6 +59,6 @@ public class SpinnerSelectionTest extends BaseTest {
         clickViewOnItemWithText(VALID_COUNTRY_NAME);
         
         // Check that the country label is updated with selected country
-        checkViewWithIdByText(R.id.country_label,VALID_COUNTRY_NAME,true);
+        checkViewWithIdMatchesText(R.id.country_label,VALID_COUNTRY_NAME);
     }
 }
